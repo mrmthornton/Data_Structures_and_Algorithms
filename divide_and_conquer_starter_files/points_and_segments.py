@@ -1,45 +1,40 @@
 # Uses python3
 import sys
+import timeit
+from functools import partial
 
 
-def fast_count_segments(starts, ends, points):
-    n_p = len(points)
-    n_s = len(starts)
-    count = [0] * len(points)
-    segments = [(i,j) for i,j in zip(starts,ends)]
-    end_sorted = sorted(segments,
-                        key=lambda e: e[1],
-                        reverse=True)
-    start_end_sorted = sorted(end_sorted,
-                              key=lambda e: e[0],
-                              reverse=True)
+def scan(scan_list,point_dict):
+#def scan(scan_list,count):
+    current_segments = 0
+    for tup in scan_list:
+        if tup[1] == 'l':
+            current_segments += 1
+        elif tup[1] == 'r':
+            current_segments -= 1
+        elif tup[1] == 'p':
+            point_dict[tup[0]] += current_segments
+            #count[points.index(tup[0])] += current_segments
+        else:
+            assert("scan() : error while scanning list")
+    return point_dict
+    #return count
     
-    p_i = 0 # points index
-    while p_i < n_p:
-        
-        start_i=0 # start index
-        
-        # skip segments with start greater than p
-        while start_i < n_s and start_end_sorted[start_i][0] > points[p_i]:
-            start_i += 1
-
-        # the segments now have start is less than or equal to p
-        # count segments with end greater than or equal to p
-        while start_i < n_s and start_end_sorted[start_i][1] >= points[p_i]:
-            count[p_i] += 1
-            start_i += 1 # examine the next segment
-                   
-        p_i += 1 # move on to the next point
-
-        ## count segments where end is greater than p
-        #end_sorted = sorted(start_sorted[start_i:],
-        #                    key=lambda e: e[1]-e[0])
-        #n_partial = len(end_sorted)
-        #end_i=0
-        #while end_i < n_partial and points[p_i] < end_sorted[end_i][1]:
-        #    count[p_i] += 1
-        #    end_i += 1
-            
+def fast_count_segments(starts, ends, points):
+    count = [0] * len(points)
+    point_dict = {p:0 for p in points}
+    scan_list = [(p,'p') for p in points]
+    scan_list.extend([(s,'l') for s in starts])
+    scan_list.extend([(e,'r') for e in ends])
+    
+    scan_list = scan_list * 10**5
+    print(timeit.Timer(scan_list.sort).repeat(1,1))
+    scan_list.sort()
+    
+    print(timeit.Timer(partial(scan,scan_list,point_dict)).repeat(1,1))
+    point_dict = scan(scan_list,point_dict)
+    count = [point_dict[p] for p in points]
+    #count = scan(scan_list,count)
     return count
 
 
@@ -53,8 +48,8 @@ def naive_count_segments(starts, ends, points):
 
 
 if __name__ == '__main__':
-    data_input = sys.stdin.read()
-    #data_input = input("s, p, segs, points : ")
+    #data_input = sys.stdin.read()
+    data_input = input("s, p, segs, points : ")
     data = list(map(int, data_input.split()))
     n = data[0]
     m = data[1]
@@ -66,8 +61,8 @@ if __name__ == '__main__':
     #count = naive_count_segments(starts, ends, points)
     #for x in count:
     #    print(x, end=' ')
-    #
     #print()
+
 
     #use fast_count_segments
     count = fast_count_segments(starts, ends, points)
