@@ -102,8 +102,8 @@ def test():
 
 import time
 if __name__ == '__main__':
-    #data_input = sys.stdin.read()
-    data_input = input("data in : ")
+    data_input = sys.stdin.read()
+    #data_input = input("data in : ")
     data = list(map(int, data_input.split()))
     n = data[0]
     if n == 0:
@@ -119,11 +119,11 @@ if __name__ == '__main__':
         #              number=3)
         #ans = smart_minimum_distance(points)
         
-        start = time.time()
-        for _ in range(1000):
-            smart_minimum_distance(points)
-        end = time.time()
-        print(end - start)
+        #start = time.time()
+        #for _ in range(1000):
+        #    smart_minimum_distance(points)
+        #end = time.time()
+        #print(end - start)
         print("{0:.4f}".format(smart_minimum_distance(points)))
 
 
