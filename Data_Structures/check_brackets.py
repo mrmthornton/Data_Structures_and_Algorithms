@@ -1,48 +1,43 @@
 # python3
 
+'''
+algotithm:
+    open = [ '[', '(', '{' ]
+    close = [ ']', ')', '}' ]
+    for char in string:
+        if char in open:
+            stack.push(char)
+        else:
+            if stack.empty(): return False
+            top = stack.pop()
+            if    top == '[' and char != ']' or \
+                  top == '(' and char != ')'  or \
+                  top == '{' and char != '}' : 
+                return False
+    return stack.empty()
+'''
+    
 import sys
 
-
-class Bracket:
-    def __init__(self, bracket_type, position):
-        self.bracket_type = bracket_type
-        self.position = position
-
-    def Match(self, c):
-        if self.bracket_type == '[' and c == ']':
-            return True
-        if self.bracket_type == '{' and c == '}':
-            return True
-        if self.bracket_type == '(' and c == ')':
-            return True
-        return False
-
-    
-def is_balanced(string):
-    opening_brackets_stack = []
-    for i, next in enumerate(text):
-        #print(i)
-        if next == '(' or next == '[' or next == '{':
-            # push onto stack
-            opening_brackets_stack.insert(0, Bracket(next,i))
-            #print("pushing")
-            
-        #if len(opening_brackets_stack)==0:
-        #    print('0')
-            
-        if next == ')' or next == ']' or next == '}':
-            # check against top of stack
-            if len(opening_brackets_stack)==0:
-                return 0
-            
-            if opening_brackets_stack[0].Match(next) == True:
-                opening_brackets_stack.pop(0)
-                #print("popping")
-            else: 
-                return opening_brackets_stack[0].position+1
-    if len(opening_brackets_stack)>0:
-        return len(opening_brackets_stack)
-    else: return True
+#### switch to list.append() and list.pop() , defaults are safer than explicit locations
+def is_balanced(string:str) -> (int, bool) :
+    opening = [ '[', '(', '{' ]
+    closing = [ ']', ')', '}' ]
+    stack = []
+    for i,char in enumerate(string):
+        if char in opening:
+            stack.insert(0,(i,char))
+        elif char in closing:
+            if len(stack)==0: 
+                return (i, False)
+            top = stack.pop(0)
+            if    top[1] == '[' and char != ']' or \
+                  top[1] == '(' and char != ')'  or \
+                  top[1] == '{' and char != '}' : 
+                return (i, False)
+    if len(stack)!=0:
+        return (stack.pop(0)[0], False)
+    return (-1, True)
         
 
 if __name__ == "__main__":
@@ -50,7 +45,8 @@ if __name__ == "__main__":
     text = input()
 
     check = is_balanced(text)
-    if check is True:
+    if check[1] is True:
         print("Success")
     else:
-        print(check)
+        print(check[0]+1)
+
